@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react"
+import { FunctionComponent, useCallback, useEffect, useState } from "react"
 import { Card } from "../common/card"
 import "../../styles/habitify.scss";
 import { LinearProgress, CircularProgress, ThemeProvider, Input } from "@material-ui/core";
@@ -34,18 +34,11 @@ export const HabitifyWidget: FunctionComponent = () => {
 
     const today = new Date();
 
-    useEffect(() => {
-        setAuthHeader(token);
-        fetchDailyProgress();
-        fetchWeeklyProgress();
-        fetchMonthlyProgress();
-    }, [token]);
-
-    const fetchDailyProgress = () => {
+    const fetchDailyProgress = useCallback(() => {
         let dailyProgressHolder = [0, 0, 0, 0, 0, 0, 0];
         Promise.allSettled(getUrlDatesForDailyProgress().map((date) => client.get(getJournalUrl(date))))
         .then((responses) => {
-            responses.map((response: any) => {
+            responses.forEach((response: any) => {
                 if(response.status.toString() === 'fulfilled') {
                     const value = parseResponse(response.value, "daily")
                     const requestUrl: string = response.value.request.responseURL;
@@ -59,13 +52,13 @@ export const HabitifyWidget: FunctionComponent = () => {
             setDailyProgress(dailyProgressHolder);
         })
         .catch((error) => console.error(error));
-    }
+    }, []);
 
-    const fetchWeeklyProgress = () => {
+    const fetchWeeklyProgress = useCallback(() => {
         let weeklyProgressHolder = [0, 0, 0, 0];
         Promise.allSettled(getUrlDatesForWeeklyProgress().map((date) => client.get(getJournalUrl(date))))
         .then((responses) => {
-            responses.map((response: any) => {
+            responses.forEach((response: any) => {
                 if(response.status.toString() === 'fulfilled') {
                     const value = parseResponse(response.value, "weekly")
                     const requestUrl: string = response.value.request.responseURL;
@@ -79,16 +72,23 @@ export const HabitifyWidget: FunctionComponent = () => {
             setWeeklyProgress(weeklyProgressHolder);
         })
         .catch((error) => console.error(error));
-    }
+    }, []);
 
-    const fetchMonthlyProgress = () => {
+    const fetchMonthlyProgress = useCallback(() => {
         client.get(getJournalUrl(getUrlDateForMonthlyProgress()))
         .then((response) => {
             const value = parseResponse(response, "monthly")
             setMonthlyProgress(value);
         })
         .catch((error) => console.error(error));
-    }
+    }, []);
+
+    useEffect(() => {
+        setAuthHeader(token);
+        fetchDailyProgress();
+        fetchWeeklyProgress();
+        fetchMonthlyProgress();
+    }, [token, fetchDailyProgress, fetchWeeklyProgress, fetchMonthlyProgress]);
 
     const getJournalUrl = (urlDate: string) => `journal?target_date=${urlDate}`;
 
@@ -96,7 +96,7 @@ export const HabitifyWidget: FunctionComponent = () => {
         if(response.data.message === "Success") {
             let dailyComplete = 0;
             let dailyGoal = 0;
-            response.data.data.map((habit: any) => {
+            response.data.data.forEach((habit: any) => {
                 const periodicity = habit.goal.periodicity;
                 const complete = Number.parseFloat(habit.progress.current_value);
                 const goal = Number.parseFloat(habit.progress.target_value);
@@ -113,7 +113,7 @@ export const HabitifyWidget: FunctionComponent = () => {
     }
 
     const renderDay = (index: number, progress: number) => (
-        <Card className={getUrlIndexFromDay(today.getDay()) == index ? "current" : ""}>
+        <Card className={getUrlIndexFromDay(today.getDay()) === index ? "current" : ""}>
             <h3 className="habitify__label">
                 {DAYS_SHORTHAND[index]}
             </h3>
@@ -134,7 +134,7 @@ export const HabitifyWidget: FunctionComponent = () => {
     );
 
     const renderWeek = (index: number, progress: number) => (
-        <Card className={index == 3 ? "current" : ""}>
+        <Card className={index === 3 ? "current" : ""}>
             <h3 className="habitify__label">
                 W{getWeekNumbersForWeeklyProgress()[index]}
             </h3>

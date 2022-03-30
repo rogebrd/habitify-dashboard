@@ -10,7 +10,7 @@ export const getUrlDate = (date: Date) => {
 const MS_PER_DAY = 24 * 60 * 60000;
 export const getUrlDatesForDailyProgress = () => {
     const today = new Date(Date.now());
-    const daysTilMonday = (today.getDay() - 1) == -1 ? 6 : (today.getDay() - 1);
+    const daysTilMonday = (today.getDay() - 1) === -1 ? 6 : (today.getDay() - 1);
     const monday = new Date(today.valueOf() - (daysTilMonday * MS_PER_DAY));
     const urlDates = [];
     let currentDate = monday;
@@ -48,5 +48,5 @@ export const getWeekNumbersForWeeklyProgress = () => {
 }
 
 export const getUrlIndexFromDay = (day: number) => {
-    return day - 1 == -1 ? 6 : day - 1;
+    return day - 1 === -1 ? 6 : day - 1;
 }
