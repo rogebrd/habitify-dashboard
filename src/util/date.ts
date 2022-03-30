@@ -1,3 +1,4 @@
+// @ts-ignore
 import DateTime from 'luxon/src/datetime.js';
 
 // Get date url at 23:59:59 EST each day
