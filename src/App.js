@@ -1,10 +1,10 @@
 import './styles/App.scss';
-import { DatetimeWidget } from './components/widgets/datetime';
+import { HabitifyWidget } from './components/widgets/habitify';
 
 function App() {
   return (
     <div className="dash">
-      <DatetimeWidget />
+      <HabitifyWidget />
     </div>
   );
 }

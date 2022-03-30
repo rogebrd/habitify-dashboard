@@ -1,4 +1,3 @@
-import { Container } from "@material-ui/core"
 import { FunctionComponent } from "react"
 import { Card } from "../common/card"
 
@@ -6,7 +5,7 @@ type DatetimeWidgetProps = {
 
 }
 
-export const DatetimeWidget: FunctionComponent<DatetimeWidgetProps> = ({ children }) => {
+export const DatetimeWidget: FunctionComponent<DatetimeWidgetProps> = ({}) => {
 
     const getDate = () => {
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
