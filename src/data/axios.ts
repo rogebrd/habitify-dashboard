@@ -12,5 +12,6 @@ export const client = axios.create({
 export const setAuthHeader = (token: any) => {
     client.interceptors.request.use((config: any) => {
         config.headers.Authorization = token;
+        return config;
     });
 };
